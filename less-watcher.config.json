@@ -1,0 +1,7 @@
+{
+  "watchFolder": "src/",
+  "outputFolder": "src/",
+  "mainFile": "components/Table.less",
+  "runOnce": false,
+  "enableJs": true
+}

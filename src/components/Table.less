@@ -1,0 +1,61 @@
+@import "vars";
+
+.table-responsive {
+  height: inherit;
+  overflow-x: auto;
+}
+
+.table-view {
+  background: @primary;
+
+  white-space: nowrap;
+  border-spacing: 0;
+
+  th, td {
+    border: 1px solid @bordercolor;
+    text-align: left;
+    padding: 0.5rem 1rem;
+  }
+
+  .sticky {
+    position: sticky;
+    // left: // this is set dynamically
+    z-index: 1;
+    background: inherit;
+  }
+}
+
+.table-header {
+  height: 2rem;
+  border: 2px solid @bordercolor;
+
+  > tr {
+    background: @secondary;
+
+    position: sticky;
+    top: 0;
+    z-index: 2;
+  }
+}
+
+.table-body {
+  color: @textcolor;
+}
+
+.table-row {
+  background: @primary;
+
+  // id column
+  & > td:first-child {
+    color: black;
+    font-weight: bold;
+  }
+
+  &:nth-child(even) {
+    background: @secondary;
+  }
+
+  &:hover {
+    background: @hovered;
+  }
+}
