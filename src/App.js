@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
-import Table from './components/Table';
+import Table from './elements/Table';
 
 function App() {
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    fetch('mockdata.json')
+    fetch('/react-table/mockdata.json')
       .then(response => response.json())
       .then(data => {
         setData(data);
@@ -30,6 +30,7 @@ function App() {
 
   return (
     <div className='App'>
+      {/* {!data ? <Table columns={columns} data={data} /> : <h1>Empty</h1>} */}
       <Table columns={columns} data={data} />
     </div>
   );

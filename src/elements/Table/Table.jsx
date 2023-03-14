@@ -1,18 +1,18 @@
 import React, { useEffect, useRef } from 'react';
 
-import './Table.css';
+import styles from './Table.module.less';
 
 
 const TableHeader = ({ columns }) => {
   let sticky_index = 0;
 
   return (
-    <thead className='table-header'>
+    <thead className={styles.tableHeader}>
       <tr>
         {columns.map((col) => (
           <th
             key={col.field}
-            className={col.isSticky ? (++sticky_index) && `sticky sticky-${sticky_index}` : ''}
+            className={col.isSticky ? (++sticky_index) && `${styles.sticky} sticky-${sticky_index}` : ''}
           >
             {col.label}
           </th>)
@@ -24,7 +24,7 @@ const TableHeader = ({ columns }) => {
 
 const TableBody = ({ columns, data }) => {
   return (
-    <tbody className='table-body'>
+    <tbody className={styles.tableBody}>
       {data.map((record) => <TableRow key={record.id} record={record} columns={columns} />)}
     </tbody>
   );
@@ -34,11 +34,11 @@ const TableRow = ({ record, columns }) => {
   let sticky_index = 0;
 
   return (
-    <tr className='table-row'>
+    <tr className={styles.tableRow}>
       {columns.map(({ field, isSticky }) => (
         <td
           key={field}
-          className={isSticky ? (++sticky_index) && `sticky sticky-${sticky_index}` : ''}
+          className={isSticky ? (++sticky_index) && `${styles.sticky} sticky-${sticky_index}` : ''}
         >
           {record[field]}
         </td>)
@@ -55,7 +55,7 @@ const Table = ({ columns, data }) => {
     const table = tableRef.current;
 
     const handleScroll = () => {
-      const sticky_columns_headers = table.querySelectorAll('th.sticky');
+      const sticky_columns_headers = table.querySelectorAll(`th.${styles.sticky}`);
       const leftOffsets = [0]; // contains left offsets for sticky columns
       sticky_columns_headers.forEach((el) => {
         const style = getComputedStyle(el);
@@ -81,8 +81,8 @@ const Table = ({ columns, data }) => {
   })
 
   return (
-    <div ref={tableRef} className='table-responsive'>
-      <table className="table-view">
+    <div ref={tableRef} className={styles.tableResponsive}>
+      <table className={styles.tableView}>
         <TableHeader columns={columns} />
         <TableBody columns={columns} data={data} />
       </table>
