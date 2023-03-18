@@ -1,91 +1,87 @@
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 
 import styles from './Table.module.less';
 
 
-const TableHeader = ({ columns }) => {
-  let sticky_index = 0;
-
+const TableCell = ({ children, width, className, style }) => {
+  const cellClassName = `${styles.tableCell} ${className || ""}`;
+  // may be `styled component` ???
+  const cellStyle = {
+    ...style,
+    width: width + 'em',
+  }
   return (
-    <thead className={styles.tableHeader}>
-      <tr>
-        {columns.map((col) => (
-          <th
-            key={col.field}
-            className={col.isSticky ? (++sticky_index) && `${styles.sticky} sticky-${sticky_index}` : ''}
-          >
-            {col.label}
-          </th>)
-        )}
-      </tr>
-    </thead>
+    <div className={cellClassName} style={cellStyle}>{children}</div>
   );
 }
 
-const TableBody = ({ columns, data }) => {
+const StickyTableCell = ({ width, leftOffset, children }) => {
+  // may be `styled component` ???
+  const stickyStyle = {
+    left: leftOffset + 'em',
+  };
   return (
-    <tbody className={styles.tableBody}>
-      {data.map((record) => <TableRow key={record.id} record={record} columns={columns} />)}
-    </tbody>
+    <TableCell
+      width={width}
+      className={styles.sticky}
+      style={stickyStyle}
+    >
+      {children}
+    </TableCell>
   );
 }
 
-const TableRow = ({ record, columns }) => {
-  let sticky_index = 0;
-
+const TableHeader = ({ children }) => {
   return (
-    <tr className={styles.tableRow}>
-      {columns.map(({ field, isSticky }) => (
-        <td
-          key={field}
-          className={isSticky ? (++sticky_index) && `${styles.sticky} sticky-${sticky_index}` : ''}
-        >
-          {record[field]}
-        </td>)
-      )}
-    </tr>
+    <div className={styles.tableHeader}>
+      {children}
+    </div>
   );
 }
 
-const Table = ({ columns, data }) => {
-  const tableRef = useRef(null);
-
-  // dirty???
-  useEffect(() => {
-    const table = tableRef.current;
-
-    const handleScroll = () => {
-      const sticky_columns_headers = table.querySelectorAll(`th.${styles.sticky}`);
-      const leftOffsets = [0]; // contains left offsets for sticky columns
-      sticky_columns_headers.forEach((el) => {
-        const style = getComputedStyle(el);
-        const width_fields = ['width', 'paddingLeft', 'paddingRight'];
-        const elem_width = width_fields
-          .map((f) => parseFloat(style[f]))
-          .reduce((acc, cur) => acc + cur);
-        leftOffsets.push(leftOffsets[leftOffsets.length - 1] + elem_width);
-      });
-
-      for (let i = 0; i < sticky_columns_headers.length; ++i) {
-        sticky_columns_headers[i].style.left = leftOffsets[i] + 'px';
-        const sticky_cells = table.querySelectorAll(`td.sticky-${i + 1}`);
-        sticky_cells.forEach((cell) => { cell.style.left = leftOffsets[i] + 'px'; });
-      }
-      table.removeEventListener('scroll', handleScroll); // can be called only once -> immediately deleted
-    }
-    table.addEventListener('scroll', handleScroll);
-
-    return () => {
-      table.removeEventListener('scroll', handleScroll);
-    };
+function createTableRow(cellsWidths, stickyColIndexes) {
+  const leftOffsets = [0];
+  stickyColIndexes.forEach((idx) => {
+    leftOffsets.push(leftOffsets[leftOffsets.length - 1] + cellsWidths[idx]);
   })
 
+  const TableRow = ({ record }) => {
+    let stickyIndex = 0;
+    return (
+      <div className={styles.tableRow}>
+        {
+          Object.values(record).map((item, idx) => {
+            const width = cellsWidths[idx];
+            if (stickyColIndexes.includes(idx)) {
+              const leftOffset = leftOffsets[stickyIndex];
+              stickyIndex++;
+              return <StickyTableCell key={idx} width={width} leftOffset={leftOffset}>{item}</StickyTableCell>;
+            } else {
+              return <TableCell key={idx} width={width}>{item}</TableCell>;
+            }
+          })
+        }
+      </div>
+    );
+  }
+
+  return TableRow;
+}
+
+
+const Table = ({ data, labels, widths, stickyIndexes }) => {
+  labels = labels || Object.keys(data[0]);
+  widths = widths || Array(labels.length).fill(15);
+  stickyIndexes = stickyIndexes || [];
+  const TableRow = createTableRow(widths, stickyIndexes);
   return (
-    <div ref={tableRef} className={styles.tableResponsive}>
-      <table className={styles.tableView}>
-        <TableHeader columns={columns} />
-        <TableBody columns={columns} data={data} />
-      </table>
+    <div className={styles.tableResponsive}>
+      <div className={styles.tableView}>
+        <TableHeader>
+          <TableRow record={labels} />
+        </TableHeader>
+        {data.map((item, idx) => <TableRow key={idx} record={item} />)}
+      </div>
     </div>
   );
 }

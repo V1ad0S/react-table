@@ -1,52 +1,46 @@
 @import "vars";
 
+.sticky {
+  position: sticky;
+  // left: // this is set dynamically
+  z-index: 1;
+  background: inherit;
+}
+
 .tableResponsive {
   height: inherit;
   overflow-x: auto;
 }
 
 .tableView {
+  display: inline-block;
   background: @primary;
-
   white-space: nowrap;
-  border-spacing: 0;
-
-  th, td {
-    border: 1px solid @bordercolor;
-    text-align: left;
-    padding: 0.5rem 1rem;
-  }
-
-  .sticky {
-    position: sticky;
-    // left: // this is set dynamically
-    z-index: 1;
-    background: inherit;
-  }
+  border-collapse: collapse;
 }
 
 .tableHeader {
-  height: 2rem;
-  border: 2px solid @bordercolor;
+  background: @secondary;
 
-  > tr {
-    background: @secondary;
+  position: sticky;
+  top: 0;
+  z-index: 2;
 
-    position: sticky;
-    top: 0;
-    z-index: 2;
+  > .tableRow {
+    color: black;
+    font-weight: bold;
+    pointer-events: none;
   }
 }
 
-.tableBody {
-  color: @textcolor;
-}
-
 .tableRow {
+  color: @textcolor;
   background: @primary;
+  display: flex;
+  flex-direction: row;
 
   // id column
-  & > td:first-child {
+  & > div:first-child {
     color: black;
     font-weight: bold;
   }
@@ -58,4 +52,16 @@
   &:hover {
     background: @hovered;
   }
+}
+
+.tableCell {
+  flex-shrink: 0;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  box-sizing: border-box;
+  border: 1px solid @bordercolor;
+  text-align: left;
+  padding: 8px 16px;
 }
